@@ -8,3 +8,4 @@ coverage/
 contract/managed/*/
 !contract/managed/README.md
 .vite/
+*.tsbuildinfo
