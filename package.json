@@ -1,0 +1,17 @@
+{
+  "name": "midnight-private-vote",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Anonymous ballots with publicly verifiable tallies, built on Midnight (Level 3 - First Quarter).",
+  "workspaces": [
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace frontend",
+    "build": "npm run build --workspace frontend",
+    "test": "npm run test --workspace frontend",
+    "test:ci": "npm run test:ci --workspace frontend",
+    "lint": "npm run lint --workspace frontend"
+  },
+  "license": "MIT"
+}
