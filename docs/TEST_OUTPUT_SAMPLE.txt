@@ -1,0 +1,65 @@
+
+> @midnight-private-vote/frontend@1.0.0 test:ci
+> vitest run --reporter=verbose --coverage
+
+
+ RUN  v2.1.9 /home/claude/midnight-private-vote/frontend
+      Coverage enabled with v8
+
+ ✓ src/test/votingSimulator.test.ts > VotingSimulator (mirrors private-voting.compact circuits) > starts in CREATED status with zero tallies
+ ✓ src/test/votingSimulator.test.ts > VotingSimulator (mirrors private-voting.compact circuits) > rejects casting a vote before the election is opened
+ ✓ src/test/votingSimulator.test.ts > VotingSimulator (mirrors private-voting.compact circuits) > openElection() moves status from CREATED to OPEN
+ ✓ src/test/votingSimulator.test.ts > VotingSimulator (mirrors private-voting.compact circuits) > throws when opening an election that is already open
+ ✓ src/test/votingSimulator.test.ts > VotingSimulator (mirrors private-voting.compact circuits) > records a YES vote and increments the public tally only
+ ✓ src/test/votingSimulator.test.ts > VotingSimulator (mirrors private-voting.compact circuits) > records a NO vote independently of YES
+ ✓ src/test/votingSimulator.test.ts > VotingSimulator (mirrors private-voting.compact circuits) > prevents the same secret from voting twice (double-vote protection)
+ ✓ src/test/votingSimulator.test.ts > VotingSimulator (mirrors private-voting.compact circuits) > produces different nullifiers for different voters
+ ✓ src/test/votingSimulator.test.ts > VotingSimulator (mirrors private-voting.compact circuits) > rejects votes cast after the election is closed
+ ✓ src/test/votingSimulator.test.ts > VotingSimulator (mirrors private-voting.compact circuits) > computeResult reflects the winning side only once closed
+ ✓ src/test/votingSimulator.test.ts > VotingSimulator (mirrors private-voting.compact circuits) > computeResult reports a TIE when tallies match
+ ✓ src/test/votingSimulator.test.ts > VotingSimulator (mirrors private-voting.compact circuits) > hasNullifierVoted mirrors the read-only hasVoted circuit
+ ✓ src/test/BallotForm.test.tsx > BallotForm > renders both vote options when the election is open
+ ✓ src/test/BallotForm.test.tsx > BallotForm > calls onVote with YES when the yes button is clicked
+ ✓ src/test/BallotForm.test.tsx > BallotForm > shows a confirmation state instead of buttons once the voter has voted
+ ✓ src/test/BallotForm.test.tsx > BallotForm > disables voting and explains why when the election has not opened yet
+ ✓ src/test/hash.test.ts > hash.ts — nullifier derivation (mirrors deriveNullifier in the .compact contract) > generateVoterSecret returns a 32-byte (64 hex char) secret
+ ✓ src/test/hash.test.ts > hash.ts — nullifier derivation (mirrors deriveNullifier in the .compact contract) > generateVoterSecret is not deterministic across calls
+ ✓ src/test/hash.test.ts > hash.ts — nullifier derivation (mirrors deriveNullifier in the .compact contract) > deriveNullifier is deterministic for the same inputs (needed to catch double votes)
+ ✓ src/test/hash.test.ts > hash.ts — nullifier derivation (mirrors deriveNullifier in the .compact contract) > deriveNullifier changes when the secret changes
+ ✓ src/test/hash.test.ts > hash.ts — nullifier derivation (mirrors deriveNullifier in the .compact contract) > deriveNullifier changes across elections for the same secret (unlinkability)
+ ✓ src/test/hash.test.ts > hash.ts — nullifier derivation (mirrors deriveNullifier in the .compact contract) > shortHex truncates long hex strings with an ellipsis
+ ✓ src/test/hash.test.ts > hash.ts — nullifier derivation (mirrors deriveNullifier in the .compact contract) > shortHex leaves short strings untouched
+ ✓ src/test/App.test.tsx > App > renders the election title and demo mode badge
+ ✓ src/test/App.test.tsx > App > shows the privacy model panel
+
+ Test Files  4 passed (4)
+      Tests  25 passed (25)
+   Start at  18:10:57
+   Duration  5.53s (transform 319ms, setup 359ms, collect 663ms, tests 318ms, environment 2.13s, prepare 408ms)
+
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   78.03 |    77.92 |   78.37 |   78.03 |                   
+ frontend          |       0 |        0 |       0 |       0 |                   
+  ...css.config.js |       0 |        0 |       0 |       0 | 1-6               
+  ...ind.config.js |       0 |        0 |       0 |       0 | 1-38              
+ frontend/src      |   85.36 |    71.42 |   66.66 |   85.36 |                   
+  App.tsx          |   95.89 |    83.33 |     100 |   95.89 | 59-61             
+  main.tsx         |       0 |        0 |       0 |       0 | 1-10              
+ ...src/components |   96.17 |    70.37 |      90 |   96.17 |                   
+  ...nControls.tsx |     100 |      100 |     100 |     100 |                   
+  BallotForm.tsx   |     100 |    84.61 |      75 |     100 | 58,66             
+  ...ierLedger.tsx |   72.41 |       50 |     100 |   72.41 | 27-35             
+  PrivacyPanel.tsx |     100 |      100 |     100 |     100 |                   
+  StatusBadge.tsx  |     100 |    33.33 |     100 |     100 | 21                
+  TallyChart.tsx   |     100 |       40 |     100 |     100 | 10-19             
+ ...tend/src/hooks |   47.05 |    66.66 |      50 |   47.05 |                   
+  useElection.ts   |   47.05 |    66.66 |      50 |   47.05 | ...64,69-76,80-87 
+ frontend/src/lib  |   88.78 |    91.42 |      85 |   88.78 |                   
+  hash.ts          |     100 |      100 |     100 |     100 |                   
+  ...ightClient.ts |      60 |       75 |      50 |      60 | ...47,49-50,96-99 
+  types.ts         |       0 |        0 |       0 |       0 |                   
+  ...gSimulator.ts |   96.72 |     91.3 |     100 |   96.72 | 59-60             
+-------------------|---------|----------|---------|---------|-------------------
