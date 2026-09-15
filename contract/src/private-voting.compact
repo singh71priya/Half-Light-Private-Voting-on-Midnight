@@ -121,7 +121,7 @@ export circuit castVote(choice: Boolean): [] {
   assert(!nullifierUsed.member(disclose(nf)), "This voter has already cast a ballot");
   nullifierUsed.insert(disclose(nf), true);
 
-  if (choice) {
+  if (disclose(choice)) {
     yesVotes.increment(1);
   } else {
     noVotes.increment(1);
