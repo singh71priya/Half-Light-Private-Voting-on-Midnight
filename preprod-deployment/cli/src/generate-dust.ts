@@ -23,21 +23,29 @@ import { getNetworkId } from '@midnight-ntwrk/midnight-js-network-id';
 import * as rx from 'rxjs';
 
 export const getUnshieldedSeed = (seed: string): Uint8Array<ArrayBufferLike> => {
-  const seedBuffer = Buffer.from(seed, 'hex');
-  const hdWalletResult = HDWallet.fromSeed(seedBuffer);
-
-  const { hdWallet } = hdWalletResult as {
-    type: 'seedOk';
-    hdWallet: HDWallet;
-  };
-
-  const derivationResult = hdWallet.selectAccount(0).selectRole(Roles.NightExternal).deriveKeyAt(0);
-
-  if (derivationResult.type === 'keyOutOfBounds') {
-    throw new Error('Key derivation out of bounds');
+  let seedBuffer: Buffer;
+  if (seed.trim().includes(' ')) {
+    try {
+      // Decode 24-word mnemonic to entropy
+      const bip39 = require('bip39');
+      const entropy = bip39.mnemonicToEntropy(seed.trim());
+      seedBuffer = Buffer.from(entropy, 'hex');
+    } catch {
+      seedBuffer = Buffer.from(seed.replace(/\s+/g, ''), 'hex');
+    }
+  } else {
+    seedBuffer = Buffer.from(seed.trim(), 'hex');
   }
 
-  return derivationResult.key;
+  const hdWalletResult = HDWallet.fromSeed(seedBuffer);
+  if ((hdWalletResult as any)?.type === 'seedOk') {
+    const derivationResult = (hdWalletResult as any).hdWallet.selectAccount(0).selectRole(Roles.NightExternal).deriveKeyAt(0);
+    if (derivationResult.type !== 'keyOutOfBounds') {
+      return derivationResult.key;
+    }
+  }
+
+  return new Uint8Array(seedBuffer.subarray(0, 32));
 };
 
 export const generateDust = async (
@@ -45,10 +53,11 @@ export const generateDust = async (
   walletSeed: string,
   unshieldedState: UnshieldedWalletState,
   walletFacade: WalletFacade,
+  passedKeystore?: any,
 ) => {
   const dustAddress = await walletFacade.dust.getAddress();
   const networkId = getNetworkId();
-  const unshieldedKeystore = createKeystore(getUnshieldedSeed(walletSeed), networkId);
+  const unshieldedKeystore = passedKeystore ?? createKeystore(getUnshieldedSeed(walletSeed), networkId);
   const utxos = unshieldedState.availableCoins.filter((coin) => !coin.meta.registeredForDustGeneration);
 
   if (utxos.length === 0) {

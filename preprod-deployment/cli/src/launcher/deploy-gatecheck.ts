@@ -101,7 +101,7 @@ async function main() {
   console.log("DUST wallet fully synchronized!");
 
   console.log("Checking / Registering DUST generation...");
-  const dustTx = await generateDust(logger, seed, unshieldedState, walletProvider.wallet);
+  const dustTx = await generateDust(logger, seed, unshieldedState, walletProvider.wallet, (walletProvider as any).unshieldedKeystore);
   if (dustTx) {
     console.log(`Registered DUST generation tx: ${dustTx}`);
     console.log("Waiting for registered UTXO to be included in block...");
