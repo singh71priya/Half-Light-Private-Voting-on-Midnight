@@ -175,7 +175,9 @@ class MidnightWalletManager {
 
     return {
       txId,
-      explorerUrl: `https://preprod.midnight.network/tx/${txId}`,
+      explorerUrl: txId.startsWith('0x')
+        ? `https://preprod.midnightexplorer.com/transactions/${txId}`
+        : `https://preprod.midnightexplorer.com/transactions/0x${txId}`,
       blockTimestamp: new Date().toISOString(),
     };
   }

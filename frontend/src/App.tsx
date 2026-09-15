@@ -55,7 +55,7 @@ export default function App() {
             <span className="font-mono text-white/50">
               Contract:{' '}
               <a
-                href="https://preprod.midnight.network/contract/937568119b1e0345b11463d01feee6d69c5c9a223b01afd103a7c8f0d20b96c2"
+                href="https://preprod.midnightexplorer.com/contracts/937568119b1e0345b11463d01feee6d69c5c9a223b01afd103a7c8f0d20b96c2"
                 target="_blank"
                 rel="noreferrer"
                 className="text-moonlight-300 underline decoration-moonlight-400/40 hover:text-white"

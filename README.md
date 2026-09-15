@@ -14,9 +14,11 @@
 
 ### ⛓️ Verified On-Chain Midnight Preprod Deployment
 - **Network**: `Midnight Preprod`
-- **Contract Address**: [`937568119b1e0345b11463d01feee6d69c5c9a223b01afd103a7c8f0d20b96c2`](https://preprod.midnight.network/contract/937568119b1e0345b11463d01feee6d69c5c9a223b01afd103a7c8f0d20b96c2)
-- **Explorer Link**: [https://preprod.midnight.network/contract/937568119b1e0345b11463d01feee6d69c5c9a223b01afd103a7c8f0d20b96c2](https://preprod.midnight.network/contract/937568119b1e0345b11463d01feee6d69c5c9a223b01afd103a7c8f0d20b96c2)
-- **DUST Registration Tx**: [`002bdd733466cbcb726d4a9e02cdab846b3016442a38e0a8607bb4f8d70f9ef687`](https://preprod.midnight.network/tx/002bdd733466cbcb726d4a9e02cdab846b3016442a38e0a8607bb4f8d70f9ef687)
+- **Contract Address**: [`0x937568119b1e0345b11463d01feee6d69c5c9a223b01afd103a7c8f0d20b96c2`](https://preprod.midnightexplorer.com/contracts/937568119b1e0345b11463d01feee6d69c5c9a223b01afd103a7c8f0d20b96c2)
+- **Explorer Link**: [https://preprod.midnightexplorer.com/contracts/937568119b1e0345b11463d01feee6d69c5c9a223b01afd103a7c8f0d20b96c2](https://preprod.midnightexplorer.com/contracts/937568119b1e0345b11463d01feee6d69c5c9a223b01afd103a7c8f0d20b96c2)
+- **Deployment Transaction**: [`0x28ec62e8f29c3a2dea4e79af7930318ea86658f4fa4f37567512eac1a875bcf7`](https://preprod.midnightexplorer.com/transactions/0x28ec62e8f29c3a2dea4e79af7930318ea86658f4fa4f37567512eac1a875bcf7)
+- **Deployment Block**: `#2,557,343`
+- **DUST Registration Tx**: `002bdd733466cbcb726d4a9e02cdab846b3016442a38e0a8607bb4f8d70f9ef687`
 - **Wallet Address**: `mn_addr_preprod10umsgsffs0l4evpt65n7ue7vyuuj3tyx8asq7evhy8v755kcgeqsnwhew4`
 
 ---
