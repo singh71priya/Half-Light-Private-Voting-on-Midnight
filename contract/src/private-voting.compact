@@ -16,7 +16,7 @@
 //   except as a one-way hash.
 // -----------------------------------------------------------------------
 
-pragma language_version 0.20;
+pragma language_version >= 0.20;
 
 import CompactStandardLibrary;
 
