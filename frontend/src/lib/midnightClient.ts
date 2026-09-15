@@ -9,7 +9,7 @@ import type { CastVoteResult, ElectionPublicState, VoteChoice } from './types';
 import { VotingSimulator } from './votingSimulator';
 import { midnightWallet } from './midnightWallet';
 
-export const DEMO_MODE = false;
+export const DEMO_MODE = true;
 
 export interface ElectionClient {
   getState(): Promise<ElectionPublicState>;
