@@ -20,6 +20,8 @@ export interface UseElectionResult {
   error: string | null;
   lastMessage: string | null;
   myNullifier: string | null;
+  lastTxId: string | null;
+  lastExplorerUrl: string | null;
   hasVoted: boolean;
   castVote: (choice: VoteChoice) => Promise<void>;
   openElection: () => Promise<void>;
@@ -33,6 +35,8 @@ export function useElection(electionId: string): UseElectionResult {
   const [error, setError] = useState<string | null>(null);
   const [lastMessage, setLastMessage] = useState<string | null>(null);
   const [myNullifier, setMyNullifier] = useState<string | null>(null);
+  const [lastTxId, setLastTxId] = useState<string | null>(null);
+  const [lastExplorerUrl, setLastExplorerUrl] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
     try {
@@ -57,8 +61,10 @@ export function useElection(electionId: string): UseElectionResult {
       setLastMessage(result.message);
       if (!result.ok) {
         setError(result.message);
-      } else if (result.nullifier) {
-        setMyNullifier(result.nullifier);
+      } else {
+        if (result.nullifier) setMyNullifier(result.nullifier);
+        if (result.txId) setLastTxId(result.txId);
+        if (result.explorerUrl) setLastExplorerUrl(result.explorerUrl);
       }
       await refresh();
     },
@@ -68,8 +74,10 @@ export function useElection(electionId: string): UseElectionResult {
   const openElection = useCallback(async () => {
     setError(null);
     try {
-      await client.openElection();
-      setLastMessage('Election opened. Ballots are now being accepted.');
+      const res = await client.openElection();
+      if (res.txId) setLastTxId(res.txId);
+      if (res.explorerUrl) setLastExplorerUrl(res.explorerUrl);
+      setLastMessage('Election opened on-chain. Ballots are now being accepted.');
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Could not open election');
     }
@@ -79,8 +87,10 @@ export function useElection(electionId: string): UseElectionResult {
   const closeElection = useCallback(async () => {
     setError(null);
     try {
-      await client.closeElection();
-      setLastMessage('Election closed. Final tallies are now locked.');
+      const res = await client.closeElection();
+      if (res.txId) setLastTxId(res.txId);
+      if (res.explorerUrl) setLastExplorerUrl(res.explorerUrl);
+      setLastMessage('Election closed on-chain. Final tallies are now locked.');
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Could not close election');
     }
@@ -89,5 +99,5 @@ export function useElection(electionId: string): UseElectionResult {
 
   const hasVoted = !!(myNullifier && state?.nullifiers.includes(myNullifier));
 
-  return { state, loading, error, lastMessage, myNullifier, hasVoted, castVote, openElection, closeElection };
+  return { state, loading, error, lastMessage, myNullifier, lastTxId, lastExplorerUrl, hasVoted, castVote, openElection, closeElection };
 }

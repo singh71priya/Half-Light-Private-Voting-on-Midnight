@@ -44,7 +44,7 @@ export function BallotForm({ meta, status, hasVoted, onVote }: Props) {
           >
             <span className="text-lg">{meta.yesLabel}</span>
             <span className="text-[11px] font-normal text-accent-yes/70">
-              {submitting === 'YES' ? 'Proving & submitting…' : 'Vote'}
+              {submitting === 'YES' ? 'Signing in wallet…' : 'Vote'}
             </span>
           </button>
           <button
@@ -55,7 +55,7 @@ export function BallotForm({ meta, status, hasVoted, onVote }: Props) {
           >
             <span className="text-lg">{meta.noLabel}</span>
             <span className="text-[11px] font-normal text-accent-no/70">
-              {submitting === 'NO' ? 'Proving & submitting…' : 'Vote'}
+              {submitting === 'NO' ? 'Signing in wallet…' : 'Vote'}
             </span>
           </button>
         </div>

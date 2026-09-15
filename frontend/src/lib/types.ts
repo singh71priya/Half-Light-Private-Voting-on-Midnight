@@ -23,4 +23,6 @@ export interface CastVoteResult {
   ok: boolean;
   message: string;
   nullifier?: string;
+  txId?: string;
+  explorerUrl?: string;
 }
