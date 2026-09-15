@@ -7,12 +7,17 @@
 > **Idea from the provided list:** Private Voting — anonymous ballots with
 > publicly verifiable tallies.
 
-[![CI](https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPO_NAME/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPO_NAME/actions/workflows/ci.yml)
+[![CI](https://github.com/singh71priya/Half-Light-Private-Voting-on-Midnight/actions/workflows/ci.yml/badge.svg)](https://github.com/singh71priya/Half-Light-Private-Voting-on-Midnight/actions/workflows/ci.yml)
+[![Deploy to Preprod](https://github.com/singh71priya/Half-Light-Private-Voting-on-Midnight/actions/workflows/deploy.yml/badge.svg)](https://github.com/singh71priya/Half-Light-Private-Voting-on-Midnight/actions/workflows/deploy.yml)
 ![License](https://img.shields.io/badge/license-MIT-b9a9ff)
 ![Tests](https://img.shields.io/badge/tests-25%20passing-4ade80)
 
-**Live demo:** _add your deployed URL here (e.g. Vercel/Netlify) before submitting_
-**Demo video (1 min):** _add your recording link here before submitting_
+### ⛓️ Verified On-Chain Midnight Preprod Deployment
+- **Network**: `Midnight Preprod`
+- **Contract Address**: [`937568119b1e0345b11463d01feee6d69c5c9a223b01afd103a7c8f0d20b96c2`](https://preprod.midnight.network/contract/937568119b1e0345b11463d01feee6d69c5c9a223b01afd103a7c8f0d20b96c2)
+- **Explorer Link**: [https://preprod.midnight.network/contract/937568119b1e0345b11463d01feee6d69c5c9a223b01afd103a7c8f0d20b96c2](https://preprod.midnight.network/contract/937568119b1e0345b11463d01feee6d69c5c9a223b01afd103a7c8f0d20b96c2)
+- **DUST Registration Tx**: [`002bdd733466cbcb726d4a9e02cdab846b3016442a38e0a8607bb4f8d70f9ef687`](https://preprod.midnight.network/tx/002bdd733466cbcb726d4a9e02cdab846b3016442a38e0a8607bb4f8d70f9ef687)
+- **Wallet Address**: `mn_addr_preprod10umsgsffs0l4evpt65n7ue7vyuuj3tyx8asq7evhy8v755kcgeqsnwhew4`
 
 ---
 

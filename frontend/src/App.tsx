@@ -52,15 +52,18 @@ export default function App() {
             <span>Target Network: <strong className="text-white">Midnight Preprod</strong></span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="font-mono text-white/40">Contract: private-voting.compact</span>
-            <a
-              href="https://preprod.midnight.network"
-              target="_blank"
-              rel="noreferrer"
-              className="text-moonlight-300 hover:underline"
-            >
-              Midnight Explorer ↗
-            </a>
+            <span className="font-mono text-white/50">
+              Contract:{' '}
+              <a
+                href="https://preprod.midnight.network/contract/937568119b1e0345b11463d01feee6d69c5c9a223b01afd103a7c8f0d20b96c2"
+                target="_blank"
+                rel="noreferrer"
+                className="text-moonlight-300 underline decoration-moonlight-400/40 hover:text-white"
+                title="View contract on Midnight Preprod Explorer"
+              >
+                93756811…0b96c2 ↗
+              </a>
+            </span>
           </div>
         </div>
       </div>
