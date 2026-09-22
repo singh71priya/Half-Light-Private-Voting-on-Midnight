@@ -81,9 +81,7 @@ export class Contract {
         }
         const contextOrig_0 = args_1[0];
         const adminSk_0 = args_1[1];
-        // Compat patch: compact-runtime 0.16.0 passes flat context; wrap it in callContext if needed
-        if (contextOrig_0 && !contextOrig_0.callContext && contextOrig_0.currentQueryContext != undefined) { contextOrig_0.callContext = contextOrig_0; }
-        if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.callContext?.currentQueryContext != undefined)) {
+        if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.currentQueryContext != undefined)) {
           __compactRuntime.typeError('openElection',
                                      'argument 1 (as invoked from Typescript)',
                                      'private-voting.compact line 96 char 1',
@@ -112,7 +110,7 @@ export class Contract {
                                                     adminSk_0);
         partialProofData.output = { value: [], alignment: [] };
         __compactRuntime.finalizeCallProofData(context, partialProofData);
-        return { result: result_0, context: context, gasCost: context.callContext.currentGasCost };
+        return { result: result_0, context: context, gasCost: context.currentGasCost };
       },
       closeElection: async (...args_1) => {
         if (args_1.length !== 2) {
@@ -120,9 +118,7 @@ export class Contract {
         }
         const contextOrig_0 = args_1[0];
         const adminSk_0 = args_1[1];
-        // Compat patch: compact-runtime 0.16.0 passes flat context; wrap it in callContext if needed
-        if (contextOrig_0 && !contextOrig_0.callContext && contextOrig_0.currentQueryContext != undefined) { contextOrig_0.callContext = contextOrig_0; }
-        if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.callContext?.currentQueryContext != undefined)) {
+        if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.currentQueryContext != undefined)) {
           __compactRuntime.typeError('closeElection',
                                      'argument 1 (as invoked from Typescript)',
                                      'private-voting.compact line 102 char 1',
@@ -151,7 +147,7 @@ export class Contract {
                                                      adminSk_0);
         partialProofData.output = { value: [], alignment: [] };
         __compactRuntime.finalizeCallProofData(context, partialProofData);
-        return { result: result_0, context: context, gasCost: context.callContext.currentGasCost };
+        return { result: result_0, context: context, gasCost: context.currentGasCost };
       },
       castVote: async (...args_1) => {
         if (args_1.length !== 2) {
@@ -159,9 +155,7 @@ export class Contract {
         }
         const contextOrig_0 = args_1[0];
         const choice_0 = args_1[1];
-        // Compat patch: compact-runtime 0.16.0 passes flat context; wrap it in callContext if needed
-        if (contextOrig_0 && !contextOrig_0.callContext && contextOrig_0.currentQueryContext != undefined) { contextOrig_0.callContext = contextOrig_0; }
-        if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.callContext?.currentQueryContext != undefined)) {
+        if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.currentQueryContext != undefined)) {
           __compactRuntime.typeError('castVote',
                                      'argument 1 (as invoked from Typescript)',
                                      'private-voting.compact line 115 char 1',
@@ -190,7 +184,7 @@ export class Contract {
                                                 choice_0);
         partialProofData.output = { value: [], alignment: [] };
         __compactRuntime.finalizeCallProofData(context, partialProofData);
-        return { result: result_0, context: context, gasCost: context.callContext.currentGasCost };
+        return { result: result_0, context: context, gasCost: context.currentGasCost };
       },
       hasVoted: async (...args_1) => {
         if (args_1.length !== 2) {
@@ -198,9 +192,7 @@ export class Contract {
         }
         const contextOrig_0 = args_1[0];
         const nullifier_0 = args_1[1];
-        // Compat patch: compact-runtime 0.16.0 passes flat context; wrap it in callContext if needed
-        if (contextOrig_0 && !contextOrig_0.callContext && contextOrig_0.currentQueryContext != undefined) { contextOrig_0.callContext = contextOrig_0; }
-        if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.callContext?.currentQueryContext != undefined)) {
+        if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.currentQueryContext != undefined)) {
           __compactRuntime.typeError('hasVoted',
                                      'argument 1 (as invoked from Typescript)',
                                      'private-voting.compact line 138 char 1',
@@ -229,7 +221,7 @@ export class Contract {
                                                 nullifier_0);
         partialProofData.output = { value: _descriptor_1.toValue(result_0), alignment: _descriptor_1.alignment() };
         __compactRuntime.finalizeCallProofData(context, partialProofData);
-        return { result: result_0, context: context, gasCost: context.callContext.currentGasCost };
+        return { result: result_0, context: context, gasCost: context.currentGasCost };
       }
     };
     this.impureCircuits = {
@@ -400,11 +392,11 @@ export class Contract {
                                                  value: __compactRuntime.StateValue.newCell({ value: _descriptor_2.toValue(0),
                                                                                               alignment: _descriptor_2.alignment() }).encode() } },
                                        { ins: { cached: false, n: 1 } }]);
-    state_0.data = new __compactRuntime.ChargedState(context.callContext.currentQueryContext.state.state);
+    state_0.data = new __compactRuntime.ChargedState(context.currentQueryContext.state.state);
     return {
       currentContractState: state_0,
-      currentPrivateState: context.callContext.currentPrivateState,
-      currentZswapLocalState: context.callContext.currentZswapLocalState
+      currentPrivateState: context.currentPrivateState,
+      currentZswapLocalState: context.currentZswapLocalState
     }
   }
   _persistentHash_0(value_0) {
@@ -416,9 +408,9 @@ export class Contract {
     return result_0;
   }
   _voterSecretKey_0(context, partialProofData) {
-    const witnessContext_0 = __compactRuntime.createWitnessContext(ledger(context.callContext.currentQueryContext.state), context.callContext.currentPrivateState, context.callContext.currentQueryContext.address);
+    const witnessContext_0 = __compactRuntime.createWitnessContext(ledger(context.currentQueryContext.state), context.currentPrivateState, context.currentQueryContext.address);
     const [nextPrivateState_0, result_0] = this.witnesses.voterSecretKey(witnessContext_0);
-    context.callContext.currentPrivateState = nextPrivateState_0;
+    context.currentPrivateState = nextPrivateState_0;
     if (!(result_0.buffer instanceof ArrayBuffer && result_0.BYTES_PER_ELEMENT === 1 && result_0.length === 32)) {
       __compactRuntime.typeError('voterSecretKey',
                                  'return value',
