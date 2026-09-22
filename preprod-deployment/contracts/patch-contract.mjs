@@ -1,18 +1,30 @@
 import { readFileSync, writeFileSync } from 'fs';
+import { join } from 'path';
 
-const filePath = './src/managed/bboard/contract/index.js';
-let code = readFileSync(filePath, 'utf8');
+// Define the file paths for both src and dist
+const files = [
+  './src/managed/bboard/contract/index.js',
+  './dist/managed/bboard/contract/index.js'
+];
 
-const importLine = `import * as __compactRuntime from '@midnight-ntwrk/compact-runtime';`;
-const patchedImport = `import * as __compactRuntime from '@midnight-ntwrk/compact-runtime';\nimport * as __compactRuntimeTypes from '@midnight-ntwrk/compact-runtime/dist/compact-types.js';`;
-
-if (!code.includes('__compactRuntimeTypes')) {
-  code = code.replace(importLine, patchedImport);
-  code = code.replace(/new __compactRuntime\.CompactTypeBoolean/g, '__compactRuntimeTypes.CompactTypeBoolean');
-  code = code.replace(/__compactRuntime\.CompactTypeBoolean/g, '__compactRuntimeTypes.CompactTypeBoolean');
-  code = code.replace(/__compactRuntime\.CompactType/g, '__compactRuntimeTypes.CompactType');
-  writeFileSync(filePath, code, 'utf8');
-  console.log('Patched contract index.js to use __compactRuntimeTypes successfully.');
-} else {
-  console.log('Contract index.js already patched.');
+for (const file of files) {
+  try {
+    let code = readFileSync(file, 'utf8');
+    
+    // Remove the bad subpath import
+    const badImportRegex = /import \* as __compactRuntimeTypes from '[^']+';\n?/;
+    if (badImportRegex.test(code)) {
+      code = code.replace(badImportRegex, '');
+      // Replace all usages with __compactRuntime
+      code = code.replace(/__compactRuntimeTypes\./g, '__compactRuntime.');
+      writeFileSync(file, code, 'utf8');
+      console.log(`Patched ${file} successfully.`);
+    } else {
+      console.log(`${file} is already clean or does not have the subpath import.`);
+    }
+  } catch (err) {
+    if (err.code !== 'ENOENT') {
+      console.error(`Error patching ${file}:`, err);
+    }
+  }
 }

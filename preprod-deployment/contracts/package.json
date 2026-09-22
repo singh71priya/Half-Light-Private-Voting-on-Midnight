@@ -34,6 +34,7 @@
     "vitest": "^4.1.0"
   },
   "dependencies": {
-    "@midnight-ntwrk/compact-runtime": "^0.16.0"
+    "@midnight-ntwrk/compact-runtime": "^0.16.0",
+    "patch-package": "^8.0.1"
   }
 }

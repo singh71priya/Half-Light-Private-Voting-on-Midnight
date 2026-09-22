@@ -78,7 +78,7 @@ export async function callContractCircuit(
 
     // Set up the providers for the SDK
     const zkConfigProvider = new FetchZkConfigProvider(zkConfigPath, fetch.bind(window));
-    const proofProvider = httpClientProofProvider(ONEAM_PROOF_SERVER, zkConfigProvider);
+    const proofProvider = httpClientProofProvider(ONEAM_PROOF_SERVER, fetch.bind(window));
 
     // Private state provider
     let privateStateProvider: any = null;
