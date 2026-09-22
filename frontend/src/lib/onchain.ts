@@ -81,37 +81,105 @@ export async function callContractCircuit(
       throw new Error('Wallet API not initialized. Please connect your wallet first.');
     }
 
+    const { address, coinPublicKey } = walletState;
+    if (!coinPublicKey) {
+      throw new Error('Wallet coin public key not found');
+    }
+
+    const ap = connectedAPI as Record<string, any>;
+    
     // Set up the providers for the SDK
     const zkConfigProvider = new FetchZkConfigProvider(zkConfigPath, fetch.bind(window));
     const proofProvider = httpClientProofProvider(ONEAM_PROOF_SERVER, zkConfigProvider);
 
+    // Provide the expected WalletProvider interface
+    const walletProvider = {
+      getCoinPublicKey: () => coinPublicKey,
+      getEncryptionPublicKey: () => coinPublicKey,
+      balanceTx: async (tx: any, _ttl?: Date) => {
+        const { toHex, fromHex } = await import('@midnight-ntwrk/midnight-js-utils');
+        const { Transaction } = await import('@midnight-ntwrk/midnight-js-protocol/ledger');
+        const serializedTx = toHex(tx.serialize());
+        if (typeof ap?.balanceUnsealedTransaction === 'function') {
+          const received = await ap.balanceUnsealedTransaction(serializedTx);
+          return Transaction.deserialize('signature', 'proof', 'binding', fromHex(received.tx));
+        }
+        throw new Error('Could not balance transaction: balanceUnsealedTransaction missing');
+      }
+    };
+
+    // Provide the expected MidnightProvider interface
+    const midnightProvider = {
+      submitTx: async (tx: any) => {
+        const { toHex } = await import('@midnight-ntwrk/midnight-js-utils');
+        const txHex = toHex(tx.serialize());
+        if (typeof ap?.submitTransaction === 'function') {
+          const res = await ap.submitTransaction(txHex);
+          let returnedId = '';
+          if (typeof res === 'string' && res.length > 0) returnedId = res;
+          else if (typeof res === 'object' && res !== null) returnedId = res.txHash || res.id;
+          return returnedId.replace(/^0x/, '');
+        }
+        throw new Error('Connected wallet does not support submitting transactions.');
+      }
+    };
+
     // Private state provider
     let privateStateProvider: any = null;
+    let privateStateId = 'bboard-voter';
+    
     if (circuitName === 'castVote' && args.voterSecretHex) {
+      const { levelPrivateStateProvider } = await import('@midnight-ntwrk/midnight-js-level-private-state-provider');
       const secretBytes = hexToBytes(args.voterSecretHex.padStart(64, '0').slice(0, 64));
-      const privateState = { voterSecretKey: secretBytes };
-      // Let's mock a simple private state provider for this transaction
+      privateStateProvider = levelPrivateStateProvider({
+        privateStateStoreName: `bboard-private-state-${coinPublicKey.slice(0, 8)}`,
+        signingKeyStoreName: `bboard-signing-${coinPublicKey.slice(0, 8)}`,
+        privateStoragePasswordProvider: () => "TempPassword123!Secure",
+        accountId: coinPublicKey,
+      });
+      // The mock we had earlier didn't have all methods and could cause Symbol crashes
+      // But we also need to supply the initial private state to findDeployedContract!
+    } else {
+      // Mock for openElection / closeElection which don't need private state
       privateStateProvider = {
-        get: async () => privateState,
+        get: async () => null,
         set: async () => {},
         setContractAddress: () => {},
+        remove: async () => {},
+        clear: async () => {},
+        exportPrivateStates: async () => ({}),
+        importPrivateStates: async () => ({}),
+        getSigningKey: async () => null,
+        setSigningKey: async () => {},
+        removeSigningKey: async () => {},
+        clearSigningKeys: async () => {},
+        exportSigningKeys: async () => ({}),
+        importSigningKeys: async () => ({}),
       };
     }
 
     const providers = {
-      privateStateProvider: privateStateProvider || { get: async () => ({}), set: async () => {}, setContractAddress: () => {} },
+      privateStateProvider,
       publicDataProvider: indexerPublicDataProvider(indexerHttp, indexerWs),
       zkConfigProvider,
       proofProvider,
-      walletProvider: connectedAPI,
-      midnightProvider: connectedAPI,
+      walletProvider,
+      midnightProvider,
     };
 
-    // Find the deployed contract on the ledger
-    const deployedContract = (await findDeployedContract(providers as any, {
+    const findArgs: any = {
       contractAddress: CONTRACT_ADDRESS,
-      contract: CompiledBBoardContractContract,
-    } as any)) as any;
+      compiledContract: CompiledBBoardContractContract,
+    };
+    
+    if (circuitName === 'castVote' && args.voterSecretHex) {
+      const secretBytes = hexToBytes(args.voterSecretHex.padStart(64, '0').slice(0, 64));
+      findArgs.privateStateId = privateStateId;
+      findArgs.initialPrivateState = { voterSecretKey: secretBytes };
+    }
+
+    // Find the deployed contract on the ledger
+    const deployedContract = (await findDeployedContract(providers as any, findArgs)) as any;
 
     let txId = '';
     
