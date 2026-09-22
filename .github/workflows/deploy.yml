@@ -39,6 +39,8 @@ jobs:
           compact --version
           cd preprod-deployment/contracts
           compact compile src/bboard.compact ./src/managed/bboard
+          sed -i 's/import \* as __compactRuntime from ''@midnight-ntwrk\/compact-runtime'';/import \* as __compactRuntime from ''@midnight-ntwrk\/compact-runtime'';\\nimport \* as __compactRuntimeTypes from ''@midnight-ntwrk\/compact-runtime\\/dist\\/compact-types.js'';/' preprod-deployment/contracts/src/managed/bboard/contract/index.js
+          sed -i 's/__compactRuntime.CompactType/__compactRuntimeTypes.CompactType/g' preprod-deployment/contracts/src/managed/bboard/contract/index.js
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
