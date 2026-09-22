@@ -180,6 +180,10 @@ class MidnightWalletManager {
     return { ...this.state };
   }
 
+  getConnectedAPI(): any {
+    return this.connectedAPI;
+  }
+
   hasWallet(): boolean {
     return typeof window !== 'undefined' &&
       !!window.midnight &&

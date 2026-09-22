@@ -76,6 +76,11 @@ export async function callContractCircuit(
       throw new Error('Could not locate active wallet provider in window.');
     }
 
+    const connectedAPI = midnightWallet.getConnectedAPI();
+    if (!connectedAPI) {
+      throw new Error('Wallet API not initialized. Please connect your wallet first.');
+    }
+
     // Set up the providers for the SDK
     const zkConfigProvider = new FetchZkConfigProvider(zkConfigPath, fetch.bind(window));
     const proofProvider = httpClientProofProvider(ONEAM_PROOF_SERVER, zkConfigProvider);
@@ -98,8 +103,8 @@ export async function callContractCircuit(
       publicDataProvider: indexerPublicDataProvider(indexerHttp, indexerWs),
       zkConfigProvider,
       proofProvider,
-      walletProvider: activeProvider,
-      midnightProvider: activeProvider,
+      walletProvider: connectedAPI,
+      midnightProvider: connectedAPI,
     };
 
     // Find the deployed contract on the ledger
