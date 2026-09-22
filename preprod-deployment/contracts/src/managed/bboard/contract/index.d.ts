@@ -8,20 +8,20 @@ export type Witnesses<PS> = {
 
 export type ImpureCircuits<PS> = {
   openElection(context: __compactRuntime.CircuitContext<PS>,
-               adminSk_0: Uint8Array): Promise<__compactRuntime.CircuitResults<PS, []>>;
+               adminSk_0: Uint8Array): __compactRuntime.CircuitResults<PS, []>;
   closeElection(context: __compactRuntime.CircuitContext<PS>,
-                adminSk_0: Uint8Array): Promise<__compactRuntime.CircuitResults<PS, []>>;
-  castVote(context: __compactRuntime.CircuitContext<PS>, choice_0: boolean): Promise<__compactRuntime.CircuitResults<PS, []>>;
-  hasVoted(context: __compactRuntime.CircuitContext<PS>, nullifier_0: Uint8Array): Promise<__compactRuntime.CircuitResults<PS, boolean>>;
+                adminSk_0: Uint8Array): __compactRuntime.CircuitResults<PS, []>;
+  castVote(context: __compactRuntime.CircuitContext<PS>, choice_0: boolean): __compactRuntime.CircuitResults<PS, []>;
+  hasVoted(context: __compactRuntime.CircuitContext<PS>, nullifier_0: Uint8Array): __compactRuntime.CircuitResults<PS, boolean>;
 }
 
 export type ProvableCircuits<PS> = {
   openElection(context: __compactRuntime.CircuitContext<PS>,
-               adminSk_0: Uint8Array): Promise<__compactRuntime.CircuitResults<PS, []>>;
+               adminSk_0: Uint8Array): __compactRuntime.CircuitResults<PS, []>;
   closeElection(context: __compactRuntime.CircuitContext<PS>,
-                adminSk_0: Uint8Array): Promise<__compactRuntime.CircuitResults<PS, []>>;
-  castVote(context: __compactRuntime.CircuitContext<PS>, choice_0: boolean): Promise<__compactRuntime.CircuitResults<PS, []>>;
-  hasVoted(context: __compactRuntime.CircuitContext<PS>, nullifier_0: Uint8Array): Promise<__compactRuntime.CircuitResults<PS, boolean>>;
+                adminSk_0: Uint8Array): __compactRuntime.CircuitResults<PS, []>;
+  castVote(context: __compactRuntime.CircuitContext<PS>, choice_0: boolean): __compactRuntime.CircuitResults<PS, []>;
+  hasVoted(context: __compactRuntime.CircuitContext<PS>, nullifier_0: Uint8Array): __compactRuntime.CircuitResults<PS, boolean>;
 }
 
 export type PureCircuits = {
@@ -29,11 +29,11 @@ export type PureCircuits = {
 
 export type Circuits<PS> = {
   openElection(context: __compactRuntime.CircuitContext<PS>,
-               adminSk_0: Uint8Array): Promise<__compactRuntime.CircuitResults<PS, []>>;
+               adminSk_0: Uint8Array): __compactRuntime.CircuitResults<PS, []>;
   closeElection(context: __compactRuntime.CircuitContext<PS>,
-                adminSk_0: Uint8Array): Promise<__compactRuntime.CircuitResults<PS, []>>;
-  castVote(context: __compactRuntime.CircuitContext<PS>, choice_0: boolean): Promise<__compactRuntime.CircuitResults<PS, []>>;
-  hasVoted(context: __compactRuntime.CircuitContext<PS>, nullifier_0: Uint8Array): Promise<__compactRuntime.CircuitResults<PS, boolean>>;
+                adminSk_0: Uint8Array): __compactRuntime.CircuitResults<PS, []>;
+  castVote(context: __compactRuntime.CircuitContext<PS>, choice_0: boolean): __compactRuntime.CircuitResults<PS, []>;
+  hasVoted(context: __compactRuntime.CircuitContext<PS>, nullifier_0: Uint8Array): __compactRuntime.CircuitResults<PS, boolean>;
 }
 
 export type Ledger = {
@@ -64,9 +64,8 @@ export declare class Contract<PS = any, W extends Witnesses<PS> = Witnesses<PS>>
   constructor(witnesses: W);
   initialState(context: __compactRuntime.ConstructorContext<PS>,
                adminPk_0: Uint8Array,
-               metaHash_0: Uint8Array): Promise<__compactRuntime.ConstructorResult<PS>>;
+               metaHash_0: Uint8Array): __compactRuntime.ConstructorResult<PS>;
 }
 
 export declare function ledger(state: __compactRuntime.StateValue | __compactRuntime.ChargedState): Ledger;
 export declare const pureCircuits: PureCircuits;
-export declare const expectedVk: Record<string, string>;

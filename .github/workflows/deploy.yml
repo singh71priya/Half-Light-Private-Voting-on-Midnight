@@ -35,7 +35,7 @@ jobs:
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
           echo "$HOME/.compact/bin" >> "$GITHUB_PATH"
           export PATH="$HOME/.local/bin:$HOME/.compact/bin:$PATH"
-          compact update 0.31.1 || compact update 0.31.0 || compact update
+          compact update 0.31.0
           compact --version
           cd preprod-deployment/contracts
           compact compile src/bboard.compact ./src/managed/bboard
