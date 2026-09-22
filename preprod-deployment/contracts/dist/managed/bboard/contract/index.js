@@ -1,4 +1,5 @@
 import * as __compactRuntimeBase from '@midnight-ntwrk/compact-runtime';
+import { persistentHash as __ocrtPersistentHash } from '@midnight-ntwrk/onchain-runtime-v3';
 __compactRuntimeBase.checkRuntimeVersion('0.16.0');
 
 // Shadow the sealed ES module namespace with a mutable wrapper that adds
@@ -11,16 +12,13 @@ const __compactRuntime = {
   finalizeCallProofData: __compactRuntimeBase.finalizeCallProofData || function(_context, _partialProofData) {
     // no-op: proof finalization handled by the SDK layer in 0.16.0
   },
+  // Delegates to the real WASM persistentHash(align, val) from onchain-runtime-v3.
+  // The compiled contract calls persistentHash(descriptor, value) where descriptor
+  // has .alignment() and .toValue() methods.
   persistentHash: __compactRuntimeBase.persistentHash || function(descriptor, value) {
-    const bytes = descriptor.toValue(Array.isArray(value) ? value : [value]);
-    let h = 0x811c9dc5n;
-    for (const cell of bytes) {
-      const b = typeof cell === 'bigint' ? cell : BigInt(cell);
-      h = BigInt.asUintN(32, (h ^ b) * 0x01000193n);
-    }
-    const result = new Uint8Array(32);
-    for (let i = 0; i < 8; i++) result[i] = Number((h >> BigInt(i * 8)) & 0xffn);
-    return result;
+    const align = descriptor.alignment();
+    const val = descriptor.toValue(value);
+    return __ocrtPersistentHash(align, val);
   },
   assert: __compactRuntimeBase.assert || function(condition, message) {
     if (!condition) throw new __compactRuntimeBase.CompactError(message || 'Assertion failed');
