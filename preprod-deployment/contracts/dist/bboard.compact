@@ -1,0 +1,140 @@
+// SPDX-License-Identifier: MIT
+//
+// private-voting.compact
+// -----------------------------------------------------------------------
+// Midnight Builder Challenge — Level 3 ("First Quarter")
+// Idea: Private Voting — anonymous ballots with publicly verifiable tallies.
+//
+// Privacy model in one paragraph:
+//   Anyone (a wallet, an observer, a block explorer) can see the election's
+//   public metadata, its lifecycle status, the *running yes/no tallies*,
+//   and the set of nullifiers that have already voted. Nobody — including
+//   the contract itself — can ever learn *which* nullifier corresponds to
+//   *which* wallet/identity, or *how* any specific voter voted. The link
+//   between "a real person" and "a nullifier" only ever exists inside the
+//   voter's own browser as a witness value that never leaves their device
+//   except as a one-way hash.
+// -----------------------------------------------------------------------
+
+pragma language_version >= 0.20;
+
+import CompactStandardLibrary;
+
+// ----------------------------- Public types -----------------------------
+
+// Lifecycle of an election. Publicly visible at all times so anyone can
+// verify an election hasn't been quietly reopened/closed out of order.
+export enum ElectionStatus { CREATED, OPEN, CLOSED }
+
+// ----------------------------- Ledger (public) state --------------------
+// Everything declared here is visible to every observer of the chain.
+
+// The admin's public key commitment. Only the matching secret key (kept as
+// a local witness by the election organizer) can open/close the election.
+export ledger admin: Bytes<32>;
+
+// Off-chain content (title, description, options) is addressed by a
+// content hash so the ledger stays small; the frontend resolves the hash
+// to human-readable text via the bundled election registry.
+export ledger electionMetaHash: Bytes<32>;
+
+export ledger status: ElectionStatus;
+
+// Public, continuously-verifiable tallies. These are the *only* per-vote
+// signal that ever reaches the chain — a running total, never a ballot.
+export ledger yesVotes: Counter;
+export ledger noVotes: Counter;
+
+// Nullifier registry: prevents double voting. Storing the nullifier does
+// NOT reveal who cast it — it is a one-way hash of a secret witness that
+// only the voter's own browser ever computes.
+export ledger nullifierUsed: Map<Bytes<32>, Boolean>;
+
+// Monotonic round counter incremented on every vote. This is a public,
+// informational counter only (e.g. "ballot #7 was just cast") — it is
+// deliberately NOT mixed into the nullifier derivation, since a per-vote
+// value would change on every call and would silently defeat double-vote
+// protection (the same secret would hash differently each time it voted).
+export ledger round: Counter;
+
+// ----------------------------- Private (witness) state -------------------
+// Witnesses execute locally in the voter's wallet/browser. Their return
+// values never touch the ledger unless explicitly wrapped in disclose().
+
+// The voter's personal secret. Derived once per wallet and persisted only
+// in local device storage — never transmitted, never logged, never sent
+// to any RPC endpoint.
+witness voterSecretKey(): Bytes<32>;
+
+// ----------------------------- Constructor --------------------------------
+
+constructor(adminPk: Bytes<32>, metaHash: Bytes<32>) {
+  admin = disclose(adminPk);
+  electionMetaHash = disclose(metaHash);
+  status = ElectionStatus.CREATED;
+}
+
+// ----------------------------- Internal helpers ---------------------------
+
+// Derives a per-election, per-voter nullifier. It is bound to this
+// specific election deployment (via electionMetaHash, which is fixed at
+// construction time) and to the voter's secret key, and to NOTHING that
+// changes between calls — so the same secret always produces the same
+// nullifier for this election, and a different nullifier for any other
+// election deployed from this template (unlinkability across elections).
+// Because the hash is one-way, recovering `sk` from the public nullifier
+// is computationally infeasible.
+circuit deriveNullifier(sk: Bytes<32>): Bytes<32> {
+  return persistentHash<Vector<2, Bytes<32>>>([
+    electionMetaHash,
+    sk
+  ]);
+}
+
+// ----------------------------- Admin circuits -----------------------------
+
+export circuit openElection(adminSk: Bytes<32>): [] {
+  assert(persistentHash<Bytes<32>>(adminSk) == admin, "Only the admin may open this election");
+  assert(status == ElectionStatus.CREATED, "Election has already been opened");
+  status = ElectionStatus.OPEN;
+}
+
+export circuit closeElection(adminSk: Bytes<32>): [] {
+  assert(persistentHash<Bytes<32>>(adminSk) == admin, "Only the admin may close this election");
+  assert(status == ElectionStatus.OPEN, "Election is not currently open");
+  status = ElectionStatus.CLOSED;
+}
+
+// ----------------------------- Voting circuit ------------------------------
+
+// choice = true -> YES, choice = false -> NO.
+// The ONLY publicly disclosed facts from this call are:
+//   1. That *some* valid, not-yet-used nullifier was consumed.
+//   2. Which of the two running counters advanced by one.
+// The voter's identity and the witness secret key are never disclosed.
+export circuit castVote(choice: Boolean): [] {
+  assert(status == ElectionStatus.OPEN, "Voting is not currently open");
+
+  const sk = voterSecretKey();
+  const nf = deriveNullifier(sk);
+
+  assert(!nullifierUsed.member(disclose(nf)), "This voter has already cast a ballot");
+  nullifierUsed.insert(disclose(nf), true);
+
+  if (disclose(choice)) {
+    yesVotes.increment(1);
+  } else {
+    noVotes.increment(1);
+  }
+
+  round.increment(1);
+}
+
+// ----------------------------- Read-only helper ----------------------------
+
+// Convenience circuit so the frontend can confirm — without needing a
+// witness — whether a given nullifier has already voted. Useful for the
+// "have I voted?" UI check once a nullifier is known locally.
+export circuit hasVoted(nullifier: Bytes<32>): Boolean {
+  return nullifierUsed.member(disclose(nullifier));
+}
