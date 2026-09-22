@@ -1,0 +1,16 @@
+﻿name: Test Compilers
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          curl --proto '=https' --tlsv1.2 -LsSf https://github.com/midnightntwrk/compact/releases/latest/download/compact-installer.sh | sh
+          export PATH=$HOME/.local/bin:$HOME/.compact/bin:$PATH
+          for v in 0.28.0 0.29.0 0.30.0 0.31.0; do
+            compact update $v || continue
+            compact compile preprod-deployment/contracts/src/bboard.compact ./test-$v
+            echo "Version $v produces runtime:"
+            cat ./test-$v/compiler/contract-info.json | grep runtime-version
+          done
