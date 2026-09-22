@@ -1,3 +1,4 @@
+import '../polyfills';
 import { midnightWallet } from './midnightWallet';
 import type { VoteChoice } from './types';
 import deployedContractInfo from '../../../deployed_contract.json';
