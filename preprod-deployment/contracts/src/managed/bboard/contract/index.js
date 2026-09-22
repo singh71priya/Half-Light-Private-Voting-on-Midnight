@@ -1,36 +1,31 @@
-import * as __compactRuntime from '@midnight-ntwrk/compact-runtime';
-__compactRuntime.checkRuntimeVersion('0.16.0');
+import * as __compactRuntimeBase from '@midnight-ntwrk/compact-runtime';
+__compactRuntimeBase.checkRuntimeVersion('0.16.0');
 
-// ---- Polyfills for functions missing from compact-runtime 0.16.0 ----
-if (!__compactRuntime.copyCircuitContext) {
-  __compactRuntime.copyCircuitContext = function(ctx) {
+// Shadow the sealed ES module namespace with a mutable wrapper that adds
+// functions missing from compact-runtime 0.16.0 (added in later versions).
+const __compactRuntime = {
+  ...__compactRuntimeBase,
+  copyCircuitContext: __compactRuntimeBase.copyCircuitContext || function(ctx) {
     return Object.assign({}, ctx);
-  };
-}
-if (!__compactRuntime.finalizeCallProofData) {
-  __compactRuntime.finalizeCallProofData = function(context, partialProofData) {
-    // no-op in 0.16.0 - proof finalization handled by the SDK layer
-  };
-}
-if (!__compactRuntime.persistentHash) {
-  __compactRuntime.persistentHash = function(descriptor, value) {
-    // Deterministic hash using the descriptor's value encoding
-    const bytes = descriptor.toValue(value);
-    const flat = new Uint8Array(bytes.length);
-    for (let i = 0; i < bytes.length; i++) flat[i] = Number(bytes[i]) & 0xff;
+  },
+  finalizeCallProofData: __compactRuntimeBase.finalizeCallProofData || function(_context, _partialProofData) {
+    // no-op: proof finalization handled by the SDK layer in 0.16.0
+  },
+  persistentHash: __compactRuntimeBase.persistentHash || function(descriptor, value) {
+    const bytes = descriptor.toValue(Array.isArray(value) ? value : [value]);
     let h = 0x811c9dc5n;
-    for (const b of flat) { h = BigInt.asUintN(32, (h ^ BigInt(b)) * 0x01000193n); }
+    for (const cell of bytes) {
+      const b = typeof cell === 'bigint' ? cell : BigInt(cell);
+      h = BigInt.asUintN(32, (h ^ b) * 0x01000193n);
+    }
     const result = new Uint8Array(32);
-    for (let i = 0; i < 8; i++) { result[i] = Number((h >> BigInt(i * 8)) & 0xffn); }
+    for (let i = 0; i < 8; i++) result[i] = Number((h >> BigInt(i * 8)) & 0xffn);
     return result;
-  };
-}
-if (!__compactRuntime.assert) {
-  __compactRuntime.assert = function(condition, message) {
-    if (!condition) throw new __compactRuntime.CompactError(message || 'Assertion failed');
-  };
-}
-// ---- End polyfills ----
+  },
+  assert: __compactRuntimeBase.assert || function(condition, message) {
+    if (!condition) throw new __compactRuntimeBase.CompactError(message || 'Assertion failed');
+  },
+};
 
 export var ElectionStatus;
 (function (ElectionStatus) {
