@@ -18,9 +18,12 @@ const __compactRuntime = {
   persistentHash: __compactRuntimeBase.persistentHash || function(descriptor, value) {
     const align = descriptor.alignment();
     const val = descriptor.toValue(value);
-    return __ocrtPersistentHash(align, val);
+    const res = __ocrtPersistentHash(align, val);
+    console.log('persistentHash result:', res, 'align:', align, 'val:', val);
+    return res;
   },
   assert: __compactRuntimeBase.assert || function(condition, message) {
+    console.log('assert:', condition, message);
     if (!condition) throw new __compactRuntimeBase.CompactError(message || 'Assertion failed');
   },
 };
