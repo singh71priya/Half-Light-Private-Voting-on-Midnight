@@ -166,9 +166,50 @@ export async function callContractCircuit(
       midnightProvider,
     };
 
+    // Attach witnesses directly to the compiled contract using CompiledContract.withWitnesses
+    type CompiledContractTarget = Parameters<typeof findDeployedContract>[1]["compiledContract"];
+    const withWitnessesFn = CompiledContract.withWitnesses as unknown as (
+      w: typeof witnesses
+    ) => (contract: unknown) => CompiledContractTarget;
+    
+    const compiledContractRaw = withWitnessesFn(witnesses)(BboardContract) as Record<string, any>;
+
+    // SDK 4.1.1 uses compact-runtime 0.16.0, but the compact compiler generated code for 0.19.0+.
+    // 0.19.0 expects `context.callContext.currentQueryContext`, which is missing in 0.16.0.
+    // We dynamically patch the contract methods to inject this missing context on-the-fly.
+    const compiledContract: any = {};
+    for (const key of Object.keys(compiledContractRaw)) {
+      if (typeof compiledContractRaw[key] === 'function') {
+        compiledContract[key] = function (...args: any[]) {
+          const context = args[0];
+          if (context && context.callContext && !context.callContext.currentQueryContext) {
+            Object.defineProperty(context.callContext, 'currentQueryContext', {
+              get() {
+                return {
+                  get state() {
+                    return {
+                      get state() {
+                        return context.callContext.state?.data || context.callContext.state;
+                      }
+                    };
+                  },
+                  get address() {
+                    return context.contractAddress || new Uint8Array(32);
+                  }
+                };
+              }
+            });
+          }
+          return compiledContractRaw[key].apply(this, args);
+        };
+      } else {
+        compiledContract[key] = compiledContractRaw[key];
+      }
+    }
+
     const findArgs: any = {
       contractAddress: CONTRACT_ADDRESS,
-      compiledContract: CompiledBBoardContractContract,
+      compiledContract: compiledContract as CompiledContractTarget,
     };
     
     if (circuitName === 'castVote' && args.voterSecretHex) {
