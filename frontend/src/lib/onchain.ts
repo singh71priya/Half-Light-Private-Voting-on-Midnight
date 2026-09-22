@@ -166,44 +166,58 @@ export async function callContractCircuit(
       midnightProvider,
     };
 
-    const compiledContractRaw = CompiledBBoardContractContract as Record<string, any>;
-
     // SDK 4.1.1 uses compact-runtime 0.16.0, but the compact compiler generated code for 0.19.0+.
     // 0.19.0 expects `context.callContext.currentQueryContext`, which is missing in 0.16.0.
-    // We dynamically patch the contract methods to inject this missing context on-the-fly.
-    const compiledContract: any = {};
-    for (const key of Object.keys(compiledContractRaw)) {
-      if (typeof compiledContractRaw[key] === 'function') {
-        compiledContract[key] = function (...args: any[]) {
-          const context = args[0];
-          if (context && context.callContext && !context.callContext.currentQueryContext) {
-            Object.defineProperty(context.callContext, 'currentQueryContext', {
-              get() {
-                return {
-                  get state() {
-                    return {
-                      get state() {
-                        return context.callContext.state?.data || context.callContext.state;
-                      }
-                    };
-                  },
-                  get address() {
-                    return context.contractAddress || new Uint8Array(32);
-                  }
-                };
-              }
-            });
+    // We dynamically intercept the Effect metadata's constructor to patch the contract instance methods on-the-fly.
+    
+    // Get the hidden Effect TypeId symbol
+    const typeIdSymbol = Object.getOwnPropertySymbols(CompiledBBoardContractContract).find(s => s.toString().includes('CompactContext'));
+    if (typeIdSymbol) {
+      const effectObj = (CompiledBBoardContractContract as any)[typeIdSymbol];
+      if (effectObj && effectObj.ctor && !effectObj.__patched) {
+        effectObj.__patched = true;
+        const originalCtor = effectObj.ctor;
+        effectObj.ctor = function (...ctorArgs: any[]) {
+          // Construct the original instance
+          const instance = new originalCtor(...ctorArgs);
+          
+          // Patch all methods on the instance to inject currentQueryContext
+          for (const key of Object.keys(instance)) {
+            if (typeof instance[key] === 'function') {
+              const originalFn = instance[key];
+              instance[key] = function (...fnArgs: any[]) {
+                const context = fnArgs[0];
+                if (context && context.callContext && !context.callContext.currentQueryContext) {
+                  Object.defineProperty(context.callContext, 'currentQueryContext', {
+                    get() {
+                      return {
+                        get state() {
+                          return {
+                            get state() {
+                              return context.callContext.state?.data || context.callContext.state;
+                            }
+                          };
+                        },
+                        get address() {
+                          return context.contractAddress || new Uint8Array(32);
+                        }
+                      };
+                    },
+                    configurable: true
+                  });
+                }
+                return originalFn.apply(this, fnArgs);
+              };
+            }
           }
-          return compiledContractRaw[key].apply(this, args);
+          return instance;
         };
-      } else {
-        compiledContract[key] = compiledContractRaw[key];
       }
     }
 
     const findArgs: any = {
       contractAddress: CONTRACT_ADDRESS,
-      compiledContract,
+      compiledContract: CompiledBBoardContractContract,
     };
     
     if (circuitName === 'castVote' && args.voterSecretHex) {
