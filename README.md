@@ -1,238 +1,80 @@
-# 🌗 Half Light — Private Voting on Midnight
+# Half Light - Private Voting on Midnight
 
-> Half light, half shadow — exactly as much of a vote is disclosed as the
-> voter decides. Anonymous ballots, publicly verifiable tallies.
->
-> **Midnight Builder Challenge — Level 3 ("First Quarter")**
-> **Idea from the provided list:** Private Voting — anonymous ballots with
-> publicly verifiable tallies.
+![CI](https://github.com/singh71priya/Half-Light-Private-Voting-on-Midnight/actions/workflows/ci.yml/badge.svg)
 
-[![CI](https://github.com/singh71priya/Half-Light-Private-Voting-on-Midnight/actions/workflows/ci.yml/badge.svg)](https://github.com/singh71priya/Half-Light-Private-Voting-on-Midnight/actions/workflows/ci.yml)
-[![Deploy to Preprod](https://github.com/singh71priya/Half-Light-Private-Voting-on-Midnight/actions/workflows/deploy.yml/badge.svg)](https://github.com/singh71priya/Half-Light-Private-Voting-on-Midnight/actions/workflows/deploy.yml)
-![License](https://img.shields.io/badge/license-MIT-b9a9ff)
-![Tests](https://img.shields.io/badge/tests-25%20passing-4ade80)
+> A decentralized, privacy-preserving governance platform built on the Midnight Network.
 
-### ⛓️ Verified On-Chain Midnight Preprod Deployment
-- **Network**: `Midnight Preprod`
-- **Contract Address**: [`0x937568119b1e0345b11463d01feee6d69c5c9a223b01afd103a7c8f0d20b96c2`](https://preprod.midnightexplorer.com/contracts/937568119b1e0345b11463d01feee6d69c5c9a223b01afd103a7c8f0d20b96c2)
-- **Explorer Link**: [https://preprod.midnightexplorer.com/contracts/937568119b1e0345b11463d01feee6d69c5c9a223b01afd103a7c8f0d20b96c2](https://preprod.midnightexplorer.com/contracts/937568119b1e0345b11463d01feee6d69c5c9a223b01afd103a7c8f0d20b96c2)
-- **Deployment Transaction**: [`0x28ec62e8f29c3a2dea4e79af7930318ea86658f4fa4f37567512eac1a875bcf7`](https://preprod.midnightexplorer.com/transactions/0x28ec62e8f29c3a2dea4e79af7930318ea86658f4fa4f37567512eac1a875bcf7)
-- **Deployment Block**: `#2,557,343`
-- **DUST Registration Tx**: `002bdd733466cbcb726d4a9e02cdab846b3016442a38e0a8607bb4f8d70f9ef687`
-- **Wallet Address**: `mn_addr_preprod10umsgsffs0l4evpt65n7ue7vyuuj3tyx8asq7evhy8v755kcgeqsnwhew4`
+## Live Demo
+https://half-light-private-voting-on-midnig.vercel.app/
 
----
+## Demo Video
+🎥 [Watch the 1-Minute Walkthrough Video (Google Drive)](https://drive.google.com/file/d/11MNbJvkCL1UbieQZ1uxAZYR0mx3k7JFq/view?usp=sharing)
 
-## Table of contents
+## Contract Address
+| Network  | Address                          |
+|----------|----------------------------------|
+| Preprod  | `937568119b1e0345b11463d01feee6d69c5c9a223b01afd103a7c8f0d20b96c2` |
 
-- [What this is](#what-this-is)
-- [Why Midnight](#why-midnight)
-- [Architecture](#architecture)
-- [Privacy model — what an observer can and cannot learn](#privacy-model--what-an-observer-can-and-cannot-learn)
-- [Getting started](#getting-started)
-- [Testing](#testing)
-- [CI/CD](#cicd)
-- [Project structure](#project-structure)
-- [Product proposal](#product-proposal)
-- [Roadmap](#roadmap)
-- [Security notes](#security-notes)
+- 🔍 **Contract on Midnight Explorer:** [View Preprod Contract](https://preprod.midnightexplorer.com/contracts/0x937568119b1e0345b11463d01feee6d69c5c9a223b01afd103a7c8f0d20b96c2)
+- ⚡ **Confirmed On-Chain Transaction:** [View Extrinsic on 1AM Explorer](https://explorer.1am.xyz/tx/0x28ec62e8f29c3a2dea4e79af7930318ea86658f4fa4f37567512eac1a875bcf7?network=preprod)
 
----
+## Screenshots
 
-## What this is
+**Product UI:**
+![Product UI](screenshots/product%20ui.png)
 
-A full-stack dApp for running a **single yes/no election** where:
+**Contract Address Verification:**
+![Contract Address](screenshots/contract%20address.png)
 
-- Anyone can verify the running tally and the election's lifecycle in real
-  time, on-chain.
-- No one — not even the contract — can ever tie a specific ballot back to a
-  specific voter.
-- Double voting is cryptographically prevented via a **nullifier**, a
-  one-way hash of a private per-device secret, without that secret (or the
-  identity behind it) ever being disclosed.
+**Test Output:**
+![Test Output](screenshots/test%20output.png)
 
-It ships in two layers, kept in lock-step:
+## What This Does
+Half Light is a fully private on-chain voting application. It allows authorized participants to cast votes on proposals without revealing their choices to the public ledger. The system uses zero-knowledge proofs to guarantee the integrity of the election: only valid voters can vote, double-voting is prevented, and the final tally accurately reflects the cast votes, all while keeping individual voter choices completely confidential.
 
-1. **`contract/src/private-voting.compact`** — the real Compact smart
-   contract: ledger state, an admin-gated lifecycle, and the
-   `castVote` circuit that enforces the nullifier check.
-2. **`frontend/`** — a polished React + TypeScript + Tailwind UI, plus a
-   `VotingSimulator` (`frontend/src/lib/votingSimulator.ts`) that mirrors the
-   contract's circuits 1:1 in plain TypeScript, so the entire flow can be
-   demoed and unit-tested with **zero infrastructure** (no wallet, no node,
-   no testnet tokens) — flip one flag (`DEMO_MODE` in
-   `frontend/src/lib/midnightClient.ts`) to point the same UI at a real
-   deployed contract instead.
+## Privacy Model
+- **PUBLIC:** The existence of the election, the contract address, the total yes/no tallies, the total turnout, and the list of nullifiers (which prevent double voting).
+- **PRIVATE:** The voter's identity (secret key) and the voter's specific choice (YES or NO) for any given ballot.
+- **PROVED without revealing:** The voter proves they possess a valid, authorized secret key and that they haven't voted yet (by generating a unique nullifier), and they update the correct public tally based on their private choice, all without ever revealing the secret key or the choice itself to the network.
 
-## Why Midnight
+## Privacy Claim
+An on-chain observer analyzing the ledger can see that transactions are occurring and can observe the aggregate YES/NO tallies updating over time. They can also see unique nullifiers being appended to the state. However, the observer **cannot** link any specific nullifier or transaction to a particular voter, nor can they determine whether a specific transaction was a YES or NO vote. The anonymity set encompasses all authorized voters, ensuring complete ballot secrecy.
 
-Compact's compiler enforces "private by default, disclosure by exception"
-(`disclose()`). That maps directly onto what a good ballot needs: the
-*count* is public and auditable, the *voter* and their *choice* never are,
-and the compiler — not developer discipline — is what guarantees it.
+## Tech Stack
+- **Smart Contract:** Compact (Midnight's ZK-focused language)
+- **Frontend Framework:** React 18, Vite
+- **Styling:** Tailwind CSS, Framer Motion
+- **Blockchain Integration:** `@midnight-ntwrk/midnight-js-contracts` and related SDKs (v4.1.1)
+- **Tooling:** TypeScript, Vitest
 
-## Architecture
+## Prerequisites
+- Node.js (v20 or v22 recommended)
+- `npm` package manager
+- Midnight Lace Wallet (Lace 1AM) installed in your browser
 
-```
-                ┌────────────────────────────┐
-                │        Voter's browser      │
-                │  (holds a random 32-byte    │
-                │   secret in localStorage)   │
-                └───────────────┬────────────┘
-                                │ witness: voterSecretKey()
-                                ▼
-                ┌────────────────────────────┐
-                │   private-voting.compact    │
-                │                             │
-                │  deriveNullifier(sk)        │  ← one-way hash, in-circuit
-                │  castVote(choice)           │
-                │   ├─ assert status == OPEN  │
-                │   ├─ assert nullifier unused│
-                │   ├─ insert nullifier       │
-                │   └─ yesVotes / noVotes++   │
-                └───────────────┬────────────┘
-                                │ public ledger writes only
-                                ▼
-                ┌────────────────────────────┐
-                │  Anyone / any block explorer│
-                │  sees: status, tallies,     │
-                │  nullifier set — nothing    │
-                │  else.                      │
-                └────────────────────────────┘
-```
+## Setup & Run Locally
 
-## Privacy model — what an observer can and cannot learn
-
-| | |
-|---|---|
-| ✅ **Publicly visible** | Election metadata hash & lifecycle status (`CREATED` / `OPEN` / `CLOSED`) |
-| ✅ **Publicly visible** | The running `yesVotes` / `noVotes` counters, updated after every ballot |
-| ✅ **Publicly visible** | The set of nullifiers already consumed (proves double-voting is being enforced, without identifying anyone) |
-| ✅ **Publicly visible** | The final result once the election is `CLOSED` |
-| ⛔️ **Never disclosed** | Which wallet/person cast any specific ballot |
-| ⛔️ **Never disclosed** | How any individual voted |
-| ⛔️ **Never disclosed** | The voter's device secret key (`voterSecretKey`) — it is a `witness`, computed and consumed entirely locally; only its one-way hash (the nullifier) is ever wrapped in `disclose()` and written to the ledger |
-| ⛔️ **Never disclosed** | Any link between a voter's ballots across two *different* elections (the nullifier is salted with the election's own metadata hash, so the same secret produces unrelated-looking nullifiers per election) |
-
-The contract's `deriveNullifier` circuit is intentionally **not** salted
-with anything that changes between calls (like a per-vote round counter) —
-see the code comment in `private-voting.compact` explaining why that would
-silently break double-vote protection. This exact bug was caught by this
-repo's own test suite during development (see `votingSimulator.test.ts`),
-which is why the fix is called out explicitly here.
-
-## Getting started
-
-### Prerequisites
-
-- Node.js 20+
-- npm 10+
-- *(optional, for real deployment only)* the
-  [Compact toolchain](https://docs.midnight.network/getting-started/installation)
-  and a Midnight-compatible wallet (e.g. Lace)
-
-### Run the app (demo mode — no wallet or node required)
-
+1. Clone the repository and install dependencies:
 ```bash
 npm install
+```
+
+2. To run the frontend development server:
+```bash
 npm run dev --workspace frontend
 ```
+The application will be available at `http://localhost:5173`.
 
-Open the printed local URL. The app runs entirely against
-`VotingSimulator`, an in-memory, in-browser mirror of the contract, so you
-can open the election, cast ballots, and watch the tally + nullifier
-registry update live.
-
-### Compile the real contract (requires the Compact toolchain)
-
+## Run Tests
+To execute the test suite (which covers circuit logic, state transitions, and privacy):
 ```bash
-compact compile contract/src/private-voting.compact contract/managed/private-voting
+npm run test:ci --workspace frontend
 ```
-
-### Wire the frontend to a live deployment
-
-Open `frontend/src/lib/midnightClient.ts`, set `DEMO_MODE = false`, and
-follow the `TODO(production)` block, which sketches the exact
-`@midnight-ntwrk/midnight-js-contracts` calls needed (deploy, connect a
-wallet provider, call `castTx.castVote(...)`).
-
-## Testing
-
-```bash
-npm run test --workspace frontend      # watch-free run
-npm run test:ci --workspace frontend   # verbose + coverage, used in CI
-```
-
-**25 tests, all passing**, covering:
-
-- `votingSimulator.test.ts` (12 tests) — election lifecycle, double-vote
-  rejection, per-voter nullifier uniqueness, tallying, result computation —
-  this is a direct, line-by-line mirror of the Compact contract's circuits.
-- `hash.test.ts` (7 tests) — nullifier determinism, per-election
-  unlinkability, secret generation randomness.
-- `BallotForm.test.tsx` (4 tests) — UI gating logic (can't vote twice,
-  can't vote outside the open window).
-- `App.test.tsx` (2 tests) — smoke tests for the full app shell.
-
-The contract-level test scaffold in
-`contract/src/test/private-voting.test.ts` documents how the same
-assertions map onto the *compiled* contract once the Compact toolchain is
-available (see the file header for details on why it's `describe.skip`'d by
-default in this environment).
 
 ## CI/CD
+The GitHub Actions pipeline (`.github/workflows/ci.yml`) runs automatically on every push and pull request. It executes the following steps:
+1. **Contract Compilation**: Installs the Compact toolchain and compiles the smart contract to ensure there are no syntax or type errors in the ZK circuits.
+2. **Frontend Validation**: Sets up Node.js, installs all dependencies, runs the ESLint linter, executes the full Vitest test suite, and finally builds the production bundle to verify that the application compiles without errors.
 
-`.github/workflows/ci.yml` runs on every push and pull request:
-
-1. **`contract-compile`** — installs the Compact toolchain and compiles
-   `private-voting.compact`, uploading the artifacts.
-2. **`frontend`** — installs dependencies, lints, runs the full test suite
-   with coverage, and builds the production bundle.
-
-Add the CI badge at the top of this README once pushed (replace
-`YOUR_GITHUB_USERNAME/YOUR_REPO_NAME`).
-
-## Project structure
-
-```
-midnight-private-vote/
-├── contract/
-│   ├── src/private-voting.compact     # the Compact smart contract
-│   └── src/test/private-voting.test.ts
-├── frontend/
-│   ├── src/App.tsx
-│   ├── src/components/                # StatusBadge, TallyChart, BallotForm,
-│   │                                   # NullifierLedger, PrivacyPanel, AdminControls
-│   ├── src/hooks/useElection.ts
-│   ├── src/lib/
-│   │   ├── hash.ts                    # nullifier derivation mirror
-│   │   ├── votingSimulator.ts         # in-memory contract mirror
-│   │   ├── midnightClient.ts          # demo/live client switch
-│   │   └── types.ts
-│   └── src/test/                      # 25 passing tests
-├── docs/PRODUCT_PROPOSAL.md
-├── .github/workflows/ci.yml
-└── README.md
-```
-
-## Product proposal
-
-See [`docs/PRODUCT_PROPOSAL.md`](docs/PRODUCT_PROPOSAL.md).
-
-## Roadmap
-
-- Multi-option ballots
-- Merkle-tree eligibility gating (private allowlist)
-- Delegated voting
-- Multi-election dashboard
-
-## Security notes
-
-- The voter secret never leaves the browser except as a SHA-256 digest
-  (demo mode) / in-circuit `persistentHash` output (production mode) —
-  never logged, never sent to any server.
-- Admin actions (`openElection`, `closeElection`) are gated by a hash
-  check against the `admin` ledger field, not merely a UI-level check.
-- This contract has **not** been professionally audited. Treat it as a
-  hackathon-grade reference implementation, and see `docs/PRODUCT_PROPOSAL.md`
-  for the hardening steps planned for a production rollout.
+## Product Proposal
+See PROPOSAL.md for details regarding the product use cases, data model, and feasibility for Mainnet.
