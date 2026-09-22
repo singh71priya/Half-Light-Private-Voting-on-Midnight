@@ -89,11 +89,12 @@ export async function callContractCircuit(
       privateStateProvider = {
         get: async () => privateState,
         set: async () => {},
+        setContractAddress: () => {},
       };
     }
 
     const providers = {
-      privateStateProvider: privateStateProvider || { get: async () => ({}), set: async () => {} },
+      privateStateProvider: privateStateProvider || { get: async () => ({}), set: async () => {}, setContractAddress: () => {} },
       publicDataProvider: indexerPublicDataProvider(indexerHttp, indexerWs),
       zkConfigProvider,
       proofProvider,
