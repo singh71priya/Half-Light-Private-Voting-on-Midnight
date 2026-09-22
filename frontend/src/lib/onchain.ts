@@ -34,7 +34,6 @@ export async function callContractCircuit(
       import('@midnight-ntwrk/midnight-js-http-client-proof-provider'),
       import('@midnight-ntwrk/midnight-js-fetch-zk-config-provider'),
       import('@midnight-ntwrk/midnight-js-contracts'),
-      // @ts-expect-error bypass SDK types
       import('@midnight-ntwrk/bboard-contract'),
       import('@midnight-ntwrk/midnight-js-network-id'),
     ]);
@@ -78,15 +77,13 @@ export async function callContractCircuit(
     }
 
     // Set up the providers for the SDK
-    const zkConfigProvider = new FetchZkConfigProvider(zkConfigPath, fetch.bind(window));
-    // @ts-expect-error bypass SDK types
-    const proofProvider = httpClientProofProvider(ONEAM_PROOF_SERVER, fetch.bind(window));
+    const zkConfigProvider = new FetchZkConfigProvider(zkConfigPath, fetch.bind(window) as any);
+    const proofProvider = httpClientProofProvider(ONEAM_PROOF_SERVER, zkConfigProvider);
 
     // Private state provider
     let privateStateProvider: any = null;
     if (circuitName === 'castVote' && args.voterSecretHex) {
       const secretBytes = hexToBytes(args.voterSecretHex.padStart(64, '0').slice(0, 64));
-      // @ts-expect-error bypass SDK types
       const privateState = { voterSecretKey: secretBytes };
       // Let's mock a simple private state provider for this transaction
       privateStateProvider = {
@@ -115,17 +112,14 @@ export async function callContractCircuit(
     if (circuitName === 'openElection') {
       const adminSk = hexToBytes(args.adminSkHex!.padStart(64, '0').slice(0, 64));
       const tx = await deployedContract.callTx.openElection(adminSk);
-      // @ts-expect-error bypass SDK types
       txId = tx.public.txHash || tx.txHash;
     } else if (circuitName === 'closeElection') {
       const adminSk = hexToBytes(args.adminSkHex!.padStart(64, '0').slice(0, 64));
       const tx = await deployedContract.callTx.closeElection(adminSk);
-      // @ts-expect-error bypass SDK types
       txId = tx.public.txHash || tx.txHash;
     } else if (circuitName === 'castVote') {
       const isYes = args.choice === 'YES';
       const tx = await deployedContract.callTx.castVote(isYes);
-      // @ts-expect-error bypass SDK types
       txId = tx.public.txHash || tx.txHash;
     }
 
