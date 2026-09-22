@@ -104,7 +104,7 @@ export async function callContractCircuit(
     // Find the deployed contract on the ledger
     const deployedContract = (await findDeployedContract(providers as any, {
       contractAddress: CONTRACT_ADDRESS,
-      contract: new CompiledBBoardContractContract(),
+      contract: CompiledBBoardContractContract,
     } as any)) as any;
 
     let txId = '';
