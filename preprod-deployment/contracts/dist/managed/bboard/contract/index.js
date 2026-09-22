@@ -19,8 +19,8 @@ const __compactRuntime = {
     const align = descriptor.alignment();
     const val = descriptor.toValue(value);
     const res = __ocrtPersistentHash(align, val);
-    console.log('persistentHash result:', res, 'align:', align, 'val:', val);
-    return res;
+    const bytes32Descriptor = new __compactRuntimeBase.CompactTypeBytes(32);
+    return bytes32Descriptor.fromValue(res);
   },
   assert: __compactRuntimeBase.assert || function(condition, message) {
     console.log('assert:', condition, message);
