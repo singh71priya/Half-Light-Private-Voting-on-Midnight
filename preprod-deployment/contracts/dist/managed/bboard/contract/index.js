@@ -82,7 +82,7 @@ export class Contract {
         const contextOrig_0 = args_1[0];
         const adminSk_0 = args_1[1];
         // Compat patch: compact-runtime 0.16.0 passes flat context; wrap it in callContext if needed
-        if (contextOrig_0 && !contextOrig_0.callContext && contextOrig_0.currentQueryContext != undefined) { (contextOrig_0 as any).callContext = contextOrig_0; }
+        if (contextOrig_0 && !contextOrig_0.callContext && contextOrig_0.currentQueryContext != undefined) { contextOrig_0.callContext = contextOrig_0; }
         if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.callContext?.currentQueryContext != undefined)) {
           __compactRuntime.typeError('openElection',
                                      'argument 1 (as invoked from Typescript)',
@@ -160,7 +160,7 @@ export class Contract {
         const contextOrig_0 = args_1[0];
         const choice_0 = args_1[1];
         // Compat patch: compact-runtime 0.16.0 passes flat context; wrap it in callContext if needed
-        if (contextOrig_0 && !contextOrig_0.callContext && contextOrig_0.currentQueryContext != undefined) { (contextOrig_0 as any).callContext = contextOrig_0; }
+        if (contextOrig_0 && !contextOrig_0.callContext && contextOrig_0.currentQueryContext != undefined) { contextOrig_0.callContext = contextOrig_0; }
         if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.callContext?.currentQueryContext != undefined)) {
           __compactRuntime.typeError('castVote',
                                      'argument 1 (as invoked from Typescript)',
@@ -199,7 +199,7 @@ export class Contract {
         const contextOrig_0 = args_1[0];
         const nullifier_0 = args_1[1];
         // Compat patch: compact-runtime 0.16.0 passes flat context; wrap it in callContext if needed
-        if (contextOrig_0 && !contextOrig_0.callContext && contextOrig_0.currentQueryContext != undefined) { (contextOrig_0 as any).callContext = contextOrig_0; }
+        if (contextOrig_0 && !contextOrig_0.callContext && contextOrig_0.currentQueryContext != undefined) { contextOrig_0.callContext = contextOrig_0; }
         if (!(typeof(contextOrig_0) === 'object' && contextOrig_0.callContext?.currentQueryContext != undefined)) {
           __compactRuntime.typeError('hasVoted',
                                      'argument 1 (as invoked from Typescript)',
