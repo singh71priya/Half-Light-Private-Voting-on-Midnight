@@ -33,9 +33,6 @@ export default function App() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <span className="rounded-full border border-moonlight-400/30 bg-moonlight-400/10 px-3 py-1 text-xs font-medium text-moonlight-300">
-              Demo mode
-            </span>
             <WalletConnectButton />
             <span className="hidden sm:inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/60">
               🌗 Level 3 · First Quarter
