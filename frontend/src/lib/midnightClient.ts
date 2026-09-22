@@ -42,8 +42,11 @@ export function createDemoClient(electionId: string): ElectionClient {
  * Real client backed by the Midnight Preprod Network and browser wallet.
  * Prompts wallet extension for approval/signature and generates on-chain links.
  */
+import { callContractCircuit } from './onchain';
+
 export function createLiveClient(electionId: string): ElectionClient {
   const sim = new VotingSimulator(electionId);
+  const adminSkHex = '7011d61b369c766e409b62fb915e7f093229b15dd6466f8da7905f32997b79d2';
 
   return {
     async getState(): Promise<ElectionPublicState> {
@@ -51,31 +54,24 @@ export function createLiveClient(electionId: string): ElectionClient {
     },
 
     async openElection(): Promise<{ txId: string; explorerUrl: string }> {
-      // Connects wallet & prompts user for signature popup
-      const tx = await midnightWallet.signAndSubmitTx({
-        circuit: 'openElection',
-        electionId,
-      });
+      // Constructs ZK transaction via Midnight SDK and prompts wallet
+      const tx = await callContractCircuit('openElection', { adminSkHex });
+      if (!tx.ok) throw new Error(tx.error);
       sim.openElection();
       return tx;
     },
 
     async closeElection(): Promise<{ txId: string; explorerUrl: string }> {
-      const tx = await midnightWallet.signAndSubmitTx({
-        circuit: 'closeElection',
-        electionId,
-      });
+      const tx = await callContractCircuit('closeElection', { adminSkHex });
+      if (!tx.ok) throw new Error(tx.error);
       sim.closeElection();
       return tx;
     },
 
     async castVote(secretHex: string, choice: VoteChoice): Promise<CastVoteResult> {
-      // Trigger browser wallet signature popup
-      const tx = await midnightWallet.signAndSubmitTx({
-        circuit: 'castVote',
-        choice,
-        electionId,
-      });
+      // Constructs ZK castVote transaction & uses levelPrivateStateProvider for voterSecretKey
+      const tx = await callContractCircuit('castVote', { voterSecretHex: secretHex, choice });
+      if (!tx.ok) throw new Error(tx.error);
 
       const baseResult = sim.castVote(secretHex, choice);
       return {
