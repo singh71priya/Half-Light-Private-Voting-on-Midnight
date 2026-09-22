@@ -1,5 +1,5 @@
 import * as __compactRuntime from '@midnight-ntwrk/compact-runtime';
-import * as __compactRuntimeTypes from '@midnight-ntwrk/compact-runtime/dist/compact-types.js';
+
 __compactRuntime.checkRuntimeVersion('0.16.0');
 
 export var ElectionStatus;
@@ -9,17 +9,17 @@ export var ElectionStatus;
   ElectionStatus[ElectionStatus['CLOSED'] = 2] = 'CLOSED';
 })(ElectionStatus || (ElectionStatus = {}));
 
-const _descriptor_0 = new __compactRuntimeTypes.CompactTypeBytes(32);
+const _descriptor_0 = new __compactRuntime.CompactTypeBytes(32);
 
-const _descriptor_1 = __compactRuntimeTypes.CompactTypeBoolean;
+const _descriptor_1 = __compactRuntime.CompactTypeBoolean;
 
-const _descriptor_2 = new __compactRuntimeTypes.CompactTypeEnum(2, 1);
+const _descriptor_2 = new __compactRuntime.CompactTypeEnum(2, 1);
 
-const _descriptor_3 = new __compactRuntimeTypes.CompactTypeUnsignedInteger(65535n, 2);
+const _descriptor_3 = new __compactRuntime.CompactTypeUnsignedInteger(65535n, 2);
 
-const _descriptor_4 = new __compactRuntimeTypes.CompactTypeVector(2, _descriptor_0);
+const _descriptor_4 = new __compactRuntime.CompactTypeVector(2, _descriptor_0);
 
-const _descriptor_5 = new __compactRuntimeTypes.CompactTypeUnsignedInteger(18446744073709551615n, 8);
+const _descriptor_5 = new __compactRuntime.CompactTypeUnsignedInteger(18446744073709551615n, 8);
 
 class _Either_0 {
   alignment() {
@@ -39,7 +39,7 @@ class _Either_0 {
 
 const _descriptor_6 = new _Either_0();
 
-const _descriptor_7 = new __compactRuntimeTypes.CompactTypeUnsignedInteger(340282366920938463463374607431768211455n, 16);
+const _descriptor_7 = new __compactRuntime.CompactTypeUnsignedInteger(340282366920938463463374607431768211455n, 16);
 
 class _ContractAddress_0 {
   alignment() {
@@ -57,7 +57,7 @@ class _ContractAddress_0 {
 
 const _descriptor_8 = new _ContractAddress_0();
 
-const _descriptor_9 = new __compactRuntimeTypes.CompactTypeUnsignedInteger(255n, 1);
+const _descriptor_9 = new __compactRuntime.CompactTypeUnsignedInteger(255n, 1);
 
 export class Contract {
   witnesses;
