@@ -166,13 +166,7 @@ export async function callContractCircuit(
       midnightProvider,
     };
 
-    // Attach witnesses directly to the compiled contract using CompiledContract.withWitnesses
-    type CompiledContractTarget = Parameters<typeof findDeployedContract>[1]["compiledContract"];
-    const withWitnessesFn = CompiledContract.withWitnesses as unknown as (
-      w: typeof witnesses
-    ) => (contract: unknown) => CompiledContractTarget;
-    
-    const compiledContractRaw = withWitnessesFn(witnesses)(BboardContract) as Record<string, any>;
+    const compiledContractRaw = CompiledBBoardContractContract as Record<string, any>;
 
     // SDK 4.1.1 uses compact-runtime 0.16.0, but the compact compiler generated code for 0.19.0+.
     // 0.19.0 expects `context.callContext.currentQueryContext`, which is missing in 0.16.0.
@@ -209,7 +203,7 @@ export async function callContractCircuit(
 
     const findArgs: any = {
       contractAddress: CONTRACT_ADDRESS,
-      compiledContract: compiledContract as CompiledContractTarget,
+      compiledContract,
     };
     
     if (circuitName === 'castVote' && args.voterSecretHex) {
