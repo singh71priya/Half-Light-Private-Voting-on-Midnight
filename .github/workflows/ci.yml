@@ -21,6 +21,8 @@ jobs:
 
       - name: compact update
         run: compact update
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Compile private-voting.compact
         run: compact compile contract/src/private-voting.compact contract/managed/private-voting
