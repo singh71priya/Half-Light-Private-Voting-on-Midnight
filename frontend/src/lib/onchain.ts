@@ -81,7 +81,7 @@ export async function callContractCircuit(
       throw new Error('Wallet API not initialized. Please connect your wallet first.');
     }
 
-    const { address, coinPublicKey } = walletState;
+    const { coinPublicKey } = walletState;
     if (!coinPublicKey) {
       throw new Error('Wallet coin public key not found');
     }
@@ -96,7 +96,7 @@ export async function callContractCircuit(
     const walletProvider = {
       getCoinPublicKey: () => coinPublicKey,
       getEncryptionPublicKey: () => coinPublicKey,
-      balanceTx: async (tx: any, _ttl?: Date) => {
+      balanceTx: async (tx: any) => {
         const { toHex, fromHex } = await import('@midnight-ntwrk/midnight-js-utils');
         const { Transaction } = await import('@midnight-ntwrk/midnight-js-protocol/ledger');
         const serializedTx = toHex(tx.serialize());
@@ -126,11 +126,9 @@ export async function callContractCircuit(
 
     // Private state provider
     let privateStateProvider: any = null;
-    let privateStateId = 'bboard-voter';
-    
+    const privateStateId = 'bboard-voter';
     if (circuitName === 'castVote' && args.voterSecretHex) {
       const { levelPrivateStateProvider } = await import('@midnight-ntwrk/midnight-js-level-private-state-provider');
-      const secretBytes = hexToBytes(args.voterSecretHex.padStart(64, '0').slice(0, 64));
       privateStateProvider = levelPrivateStateProvider({
         privateStateStoreName: `bboard-private-state-${coinPublicKey.slice(0, 8)}`,
         signingKeyStoreName: `bboard-signing-${coinPublicKey.slice(0, 8)}`,
